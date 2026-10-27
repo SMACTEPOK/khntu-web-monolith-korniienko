@@ -99,3 +99,55 @@ express-monolith-starter/
 - бізнес-логіка збереження даних у БД.
 
 Модель предметної області наразі існує **лише як ER-діаграма** (див. наступний розділ) і буде реалізована в наступних лабораторних роботах.
+
+---
+
+## 🗂 ER-діаграма
+
+```mermaid
+erDiagram
+    USER ||--o{ ORDER : places
+    CATEGORY ||--o{ PRODUCT : contains
+    ORDER ||--|{ ORDER_ITEM : contains
+    PRODUCT ||--o{ ORDER_ITEM : included_in
+
+    USER {
+        int id PK
+        string email
+        string role
+    }
+
+    CATEGORY {
+        int id PK
+        string title
+        string slug
+    }
+
+    PRODUCT {
+        int id PK
+        string title
+        float price
+        int categoryId FK
+    }
+
+    ORDER {
+        int id PK
+        int userId FK
+        float totalAmount
+        datetime createdAt
+    }
+
+    ORDER_ITEM {
+        int id PK
+        int orderId FK
+        int productId FK
+        int quantity
+        float priceAtPurchase
+    }
+```
+
+**Пояснення зв'язків:**
+- `USER ||--o{ ORDER` — **1:N**. Один користувач → багато замовлень; замовлення має рівно одного користувача.
+- `CATEGORY ||--o{ PRODUCT` — **1:N**. Одна категорія → багато товарів; товар має рівно одну категорію.
+- `ORDER ||--|{ ORDER_ITEM` та `PRODUCT ||--o{ ORDER_ITEM` — разом утворюють **N:M** між `ORDER` і `PRODUCT` через проміжкову сутність `ORDER_ITEM`.
+- Проміжкова таблиця `ORDER_ITEM` має **власні атрибути** `quantity` і `priceAtPurchase`, які описують сам факт зв'язку «замовлення ↔ товар».
